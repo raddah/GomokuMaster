@@ -6,7 +6,7 @@ class Gomoku(TwoPlayerGame):
     def __init__(self, players=None):
         """Initialize the game."""
         self.board_size = 5
-        self.board = [0] * (self.board_size * self.board_size)
+        self.board = [[0 for _ in range(self.board_size)] for _ in range(self.board_size)]
         self.players = players or [Human_Player(), AI_Player(Negamax(5))]
         self.current_player = 1  # Player 1 starts
 
@@ -32,18 +32,14 @@ class Gomoku(TwoPlayerGame):
 
     def show(self):
         """Print the board."""
-        for i in range(self.board_size):
-            print(
-                " ".join(
-                    ["." if self.board[i * self.board_size + j] == 0 else
-                     ("O" if self.board[i * self.board_size + j] == 1 else "X")
-                     for j in range(self.board_size)]
-                )
-            )
+        for row in self.board:
+            print(" ".join(["." if cell == 0 else ("O" if cell == 1 else "X") for cell in row]))
 
     def scoring(self):
         """Return a score for the current player."""
-        return -100 if self.lose() else 0
+        score = -100 if self.lose() else 0
+        print(f"Scoring: Player {self.current_player}, Score: {score}")
+        return score
 
     def five_in_a_row(self, opponent):
         """Check if the opponent has five in a row."""
@@ -75,6 +71,19 @@ class Gomoku(TwoPlayerGame):
                     return True
 
         return False
+
+    def play(self, verbose=True):
+        """Play the game."""
+        if verbose:
+            print("Welcome to Gomoku!")
+            print("The goal is to get five in a row (horizontally, vertically, or diagonally).")
+            print("Players take turns placing their stones on the board.")
+            print("Player 1: O, Player 2: X")
+            print("To make a move, enter the row and column number (1-5), separated by a space.")
+            print(self)
+
+        while not self.is_over():
+            pass
 
 if __name__ == "__main__":
     """Play the game."""
