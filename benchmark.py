@@ -108,10 +108,10 @@ def run_benchmarks():
         ('Negamax (depth=5)', Negamax(depth=5, timeout=10)),
     ]
     
-    # Define the board sizes to benchmark
-    board_sizes = [9, 13, 15]
+    # Focus on 9x9 board size for initial benchmarks
+    board_sizes = [9]
     
-    # Run the benchmarks
+    # Run the benchmarks with fewer runs
     results = []
     for board_size in board_sizes:
         for algorithm_name, algorithm in algorithms:
@@ -119,8 +119,8 @@ def run_benchmarks():
                 algorithm_name=algorithm_name,
                 algorithm=algorithm,
                 board_size=board_size,
-                num_moves=10,
-                num_runs=3
+                num_moves=5,  # Reduced from 10
+                num_runs=1    # Reduced from 3
             )
             results.append(result)
     
