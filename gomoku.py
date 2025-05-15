@@ -371,10 +371,23 @@ class Gomoku(TwoPlayerGame):
     def play(self, verbose=True):
         """Play the game."""
         if verbose:
-            print("Welcome to Gomoku!")
-            print("The goal is to get five in a row (horizontally, vertically, or diagonally).")
-            print("Players take turns placing their stones on the board.")
-            print(f"{self.players[0].name}: O, {self.players[1].name}: X")
+            # Display welcome message
+            print("\033[1;33mWelcome to Gomoku!\033[0m")
+            print("------------------")
+            
+            # Display game rules with same color formatting
+            try:
+                with open('game_rules.md', 'r') as f:
+                    print("\033[1;36m")  # Cyan color for header
+                    print("="*50)
+                    print(f.read())
+                    print("="*50)
+                    print("\033[0m")  # Reset color
+            except FileNotFoundError:
+                print("The goal is to get five in a row (horizontally, vertically, or diagonally).")
+                print("Players take turns placing their stones on the board.")
+            
+            print(f"\n{self.players[0].name}: O, {self.players[1].name}: X")
             print("To make a move, enter the row and column number (e.g., '2 3' for row 2, column 3).")
             print(self)
 
