@@ -58,6 +58,16 @@ class Negamax(EasyAI_Negamax):
 class AI_Player(EasyAI_AI_Player):
     """AI player for Gomoku game."""
     
+    def __init__(self, AI_algo, name="AI Gomoku Master"):
+        """Initialize the AI player.
+        
+        Args:
+            AI_algo: The AI algorithm to use.
+            name: The name of the AI player (default: "AI Gomoku Master").
+        """
+        super().__init__(AI_algo)
+        self.name = name
+    
     def ask_move(self, game):
         """Ask the AI player for a move.
         
@@ -73,6 +83,15 @@ class AI_Player(EasyAI_AI_Player):
 class Human_Player(EasyAI_Human_Player):
     """Human player for Gomoku game."""
     
+    def __init__(self, name=None):
+        """Initialize the human player.
+        
+        Args:
+            name: The name of the human player (default: None).
+        """
+        super().__init__()
+        self.name = name
+    
     def ask_move(self, game):
         """Ask the human player for a move.
         
@@ -87,7 +106,7 @@ class Human_Player(EasyAI_Human_Player):
         # Keep asking until a valid move is entered
         while True:
             try:
-                move_str = input(f"Player {game.current_player}, enter your move (row col): ")
+                move_str = input(f"{self.name}, enter your move (row col): ")
                 row, col = map(int, move_str.split())
                 
                 # Check if the move is valid
@@ -355,14 +374,15 @@ class Gomoku(TwoPlayerGame):
             print("Welcome to Gomoku!")
             print("The goal is to get five in a row (horizontally, vertically, or diagonally).")
             print("Players take turns placing their stones on the board.")
-            print("Player 1: O, Player 2: X")
+            print(f"{self.players[0].name}: O, {self.players[1].name}: X")
             print("To make a move, enter the row and column number (e.g., '2 3' for row 2, column 3).")
             print(self)
 
         while not self.is_over():
             # Get the move from the current player
             if verbose:
-                print(f"\nPlayer {self.current_player}'s turn ({'O' if self.current_player == 1 else 'X'})")
+                player_name = self.players[self.current_player - 1].name
+                print(f"\n{player_name}'s turn ({'O' if self.current_player == 1 else 'X'})")
             
             # Get the move from the current player
             move = self.player.ask_move(self)
@@ -380,7 +400,8 @@ class Gomoku(TwoPlayerGame):
         # Game over
         if verbose:
             if self.lose():
-                print(f"Player {3 - self.current_player} wins!")
+                winner_name = self.players[2 - self.current_player].name
+                print(f"{winner_name} wins!")
             else:
                 print("It's a draw!")
 
@@ -419,6 +440,15 @@ if __name__ == "__main__":
         except ValueError:
             print("Invalid input. Please enter a number.")
     
+    # Ask for player's name
+    player_name = input("Enter your name: ")
+    if player_name.strip() == "":
+        player_name = "Player 1"  # Default name
+    
+    # Create players
+    human_player = Human_Player(name=player_name)
+    ai_player = AI_Player(Negamax(depth=difficulty, timeout=10))
+    
     # Create and play the game
-    gomoku = Gomoku(board_size=board_size, difficulty=difficulty)
+    gomoku = Gomoku(board_size=board_size, difficulty=difficulty, players=[human_player, ai_player])
     gomoku.play()
