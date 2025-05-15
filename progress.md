@@ -18,7 +18,7 @@
     *   [x] Consider implementing Alpha-Beta pruning, Transposition tables, and SSS algorithm (Optional).
         *   [x] Implement Alpha-Beta pruning.
         *   [x] Implement Transposition tables.
-        *   [ ] Implement SSS algorithm.
+        *   [x] Implement SSS algorithm.
     *   [x] Add comments to explain the AI algorithms and heuristic function in detail.
 3.  **Benchmarking and Reporting:**
     *   [x] Create a separate file (e.g., `benchmark.py`) to measure the performance of each AI algorithm and model during runtime.
