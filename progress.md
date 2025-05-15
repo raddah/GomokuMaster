@@ -50,6 +50,7 @@
 8.  **Version Control (Git):**
     *   [x] Initialize a Git repository.
     *   [x] Commit changes after successful implementation of features or bug fixes.
+    *   [x] Create README.md, LICENSE, and requirements.txt files.
     *   [ ] Push the code to a GitHub repository.
         *   The repository name is "GomokuMaster" and the username is "raddah".
         *   [x] Ensure clear and descriptive commit messages.
