@@ -172,11 +172,19 @@ class Gomoku(TwoPlayerGame):
 
     def lose(self):
         """Has the opponent formed a five-in-a-row?"""
-        return self.five_in_a_row(opponent=self.current_player)
+        # Check if opponent has five in a row
+        opponent = 3 - self.current_player
+        return self.five_in_a_row(opponent)
 
     def is_over(self):
         """Is the game over?"""
-        return self.lose() or not self.possible_moves()
+        # Check if current player lost (opponent won)
+        if self.five_in_a_row(3 - self.current_player):
+            return True
+        # Check if board is full
+        if not self.possible_moves():
+            return True
+        return False
 
     def show(self):
         """Print the board."""
@@ -365,7 +373,11 @@ class Gomoku(TwoPlayerGame):
         s = "  " + " ".join(str(i) for i in range(self.board_size)) + "\n"
         # Add row numbers and board
         for i, row in enumerate(self.board):
-            s += str(i) + " " + " ".join(["." if cell == 0 else ("O" if cell == 1 else "X") for cell in row]) + "\n"
+            s += str(i) + " " + " ".join([
+                "." if cell == 0 else 
+                ("\033[1;34mO\033[0m" if cell == 1 else "\033[1;31mX\033[0m") 
+                for cell in row
+            ]) + "\n"
         return s
 
     def play(self, verbose=True):
@@ -387,7 +399,7 @@ class Gomoku(TwoPlayerGame):
                 print("The goal is to get five in a row (horizontally, vertically, or diagonally).")
                 print("Players take turns placing their stones on the board.")
             
-            print(f"\n{self.players[0].name}: O, {self.players[1].name}: X")
+            print(f"\n\033[1;34m{self.players[0].name}: O\033[0m, \033[1;31m{self.players[1].name}: X\033[0m")
             print("To make a move, enter the row and column number (e.g., '2 3' for row 2, column 3).")
             print(self)
 
@@ -395,7 +407,10 @@ class Gomoku(TwoPlayerGame):
             # Get the move from the current player
             if verbose:
                 player_name = self.players[self.current_player - 1].name
-                print(f"\n{player_name}'s turn ({'O' if self.current_player == 1 else 'X'})")
+                if self.current_player == 1:  # Human player
+                    print(f"\n\033[1;34m{player_name}'s turn (O)\033[0m")  # Blue for human
+                else:  # AI player
+                    print(f"\n\033[1;31m{player_name}'s turn (X)\033[0m")  # Red for AI
             
             # Get the move from the current player
             move = self.player.ask_move(self)
@@ -414,9 +429,9 @@ class Gomoku(TwoPlayerGame):
         if verbose:
             if self.lose():
                 winner_name = self.players[2 - self.current_player].name
-                print(f"{winner_name} wins!")
-            else:
-                print("It's a draw!")
+                print(f"\n\033[1;32m{winner_name} wins!\033[0m")  # Green color for win message
+            elif not self.possible_moves():
+                print("\n\033[1;33mIt's a draw!\033[0m")  # Yellow color for draw message
 
 if __name__ == "__main__":
     """Play the game."""
