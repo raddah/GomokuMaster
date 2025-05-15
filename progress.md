@@ -27,6 +27,9 @@
         *   Handling user input for human moves.
         *   Calling the AI to make moves.
     *   [x] Add comments to explain the turn management logic.
+    *   [x] Ask Player 1 for their name before the game starts.
+    *   [x] Set Player 2's name to "AI Gomoku Master".
+    *   [x] Update the game to display player names instead of "Player 1" and "Player 2".
 4.  **Console Interface:**
     *   [x] Create a simple console interface for playing the game.
         *   [x] Display the game board after each move.
