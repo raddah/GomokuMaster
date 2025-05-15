@@ -24,7 +24,8 @@
     *   [x] Create a separate file (e.g., `benchmark.py`) to measure the performance of each AI algorithm and model during runtime.
     *   [x] Generate graphs and reports to visualize the performance data, including the results of the model algorithms.
     *   [x] Update requirements.txt to include dependencies for benchmarking.
-    *   [x] Commit and push changes to GitHub.
+    *   [x] Commit changes to GitHub.
+    *   [ ] Push changes to remote repository.
 4.  **Game Setup and Turn Management:**
     *   [x] Implement functions for:
         *   Initializing the game board.
@@ -59,6 +60,6 @@
     *   [x] Initialize a Git repository.
     *   [x] Commit changes after successful implementation of features or bug fixes.
     *   [x] Create README.md, LICENSE, and requirements.txt files.
-    *   [ ] Push the code to a GitHub repository.
+    *   [x] Push the code to a GitHub repository.
         *   The repository name is "GomokuMaster" and the username is "raddah".
         *   [x] Ensure clear and descriptive commit messages.
