@@ -1,13 +1,14 @@
 from easyAI import TwoPlayerGame, Negamax as EasyAI_Negamax, Human_Player as EasyAI_Human_Player, AI_Player as EasyAI_AI_Player
+from easyAI.AI.TranspositionTable import TranspositionTable
 import time
 import random
 
 class Negamax(EasyAI_Negamax):
-    """Negamax algorithm with alpha-beta pruning and transposition tables."""
-    
+    """Negamax algorithm with alpha-beta pruning, transposition tables, and iterative deepening."""
+
     def __init__(self, depth, scoring=None, win_score=100000, tt=None, timeout=None):
         """Initialize the Negamax algorithm.
-        
+
         Args:
             depth: The maximum depth of the search tree.
             scoring: A function that returns a score for a given game state.
@@ -15,45 +16,65 @@ class Negamax(EasyAI_Negamax):
             tt: A transposition table.
             timeout: The maximum time (in seconds) to spend on a move.
         """
-        super().__init__(depth, scoring, win_score, tt)
+        super().__init__(depth, scoring, win_score, tt if tt is not None else TranspositionTable())
         self.timeout = timeout
         self.start_time = None
-    
+
     def is_timeout(self):
         """Check if the timeout has been reached."""
         if self.timeout is None:
             return False
         return time.time() - self.start_time > self.timeout
-    
+
     def search(self, game, depth, alpha, beta):
         """Search the game tree using the Negamax algorithm with alpha-beta pruning.
-        
+
         Args:
             game: The game instance.
             depth: The current depth in the search tree.
             alpha: The alpha value for alpha-beta pruning.
             beta: The beta value for alpha-beta pruning.
-            
+
         Returns:
             tuple: A tuple (score, move) representing the best score and move.
         """
         # Check if timeout has been reached
         if self.is_timeout():
             return -self.win_score, None
-        
+
         return super().search(game, depth, alpha, beta)
-    
+
     def __call__(self, game):
-        """Call the Negamax algorithm to get the best move.
-        
+        """Call the Negamax algorithm to get the best move using iterative deepening.
+
         Args:
             game: The game instance.
-            
+
         Returns:
             The best move.
         """
         self.start_time = time.time()
-        return super().__call__(game)
+        best_move = None
+        best_score = float('-inf')
+        timed_out = False
+        # Iterative deepening: try increasing depths until timeout or max depth
+        for d in range(1, self.depth + 1):
+            if self.is_timeout():
+                timed_out = True
+                break
+            # Temporarily set self.depth for parent's __call__
+            old_depth = self.depth
+            self.depth = d
+            move = super().__call__(game)
+            self.depth = old_depth
+            if not self.is_timeout() and move is not None:
+                best_move = move
+            elif self.is_timeout():
+                timed_out = True
+                break
+        if timed_out:
+            print("\033[1;35m[AI Notice] AI timed out and played the best move found so far.\033[0m")
+        return best_move
 
 class AI_Player(EasyAI_AI_Player):
     """AI player for Gomoku game."""
@@ -379,6 +400,11 @@ class Gomoku(TwoPlayerGame):
                 for cell in row
             ]) + "\n"
         return s
+
+    def ttentry(self):
+        """Return a hashable representation of the board and current player for the transposition table."""
+        # Flatten the board and add the current player to the tuple
+        return tuple(tuple(row) for row in self.board), self.current_player
 
     def play(self, verbose=True):
         """Play the game."""
