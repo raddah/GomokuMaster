@@ -10,8 +10,8 @@
     *   [x] Implement the Negamax algorithm with a timeout.
         *   [x] Implement the basic Negamax algorithm.
         *   [x] Add a timeout to the Negamax algorithm.
-    *   [ ] Implement iterative deepening to improve the AI's search efficiency.
-        *   [ ] Implement iterative deepening.
+    *   [x] Implement iterative deepening to improve the AI's search efficiency.
+        *   [x] Implement iterative deepening.
     *   [x] Develop a heuristic function that evaluates board positions.
         *   [x] Create a basic heuristic function.
         *   [x] Refine the heuristic function to prioritize defensive moves.
