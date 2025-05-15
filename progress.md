@@ -49,7 +49,7 @@
     *   [x] Ensure excellent documentation with comments explaining logic, flow, and definitions.
 8.  **Version Control (Git):**
     *   [x] Initialize a Git repository.
-    *   [ ] Commit changes after successful implementation of features or bug fixes.
+    *   [x] Commit changes after successful implementation of features or bug fixes.
     *   [ ] Push the code to a GitHub repository.
         *   The repository name is "GomokuMaster" and the username is "raddah".
-        *   [ ] Ensure clear and descriptive commit messages.
+        *   [x] Ensure clear and descriptive commit messages.
