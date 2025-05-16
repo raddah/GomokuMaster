@@ -682,7 +682,17 @@
         </div>
     </footer>
     
-    <script>
+    <script type="module">
+        // Import sound functions from Web Audio API implementation
+        import { 
+            initSoundSystem, 
+            playStoneSound, 
+            playEnhancedStoneSound, 
+            playWinSound, 
+            playDrawSound, 
+            playErrorSound 
+        } from './static/js/web-audio-sounds.js';
+        
         // Game state
         let gameState = {
             board: [],
@@ -727,10 +737,8 @@
         const tabs = document.querySelectorAll('.tab');
         const tabContents = document.querySelectorAll('.tab-content');
         
-        // Stone placement sound (simulated)
-        const placeStoneSound = new Audio();
-        const winSound = new Audio();
-        const errorSound = new Audio();
+        // Use enhanced stone sound for better quality
+        const useEnhancedSounds = true;
         
         // Initialize the game
         function initGame() {
@@ -1007,7 +1015,7 @@
             }, 10);
             
             // Play sound
-            playStoneSound();
+            playStonePlacementSound();
         }
         
         // Handle board click
@@ -1054,7 +1062,7 @@
                 gameState.winner = gameState.currentPlayer;
                 gameState.gameActive = false;
                 updateGameStatus();
-                playWinSound();
+                playWinSound(); // Play win sound when a player wins
                 return;
             }
             
@@ -1062,6 +1070,7 @@
             if (checkDraw()) {
                 gameState.gameActive = false;
                 updateGameStatus();
+                playDrawSound(); // Play draw sound when the game ends in a draw
                 return;
             }
             
@@ -1255,22 +1264,14 @@
             }
         }
         
-        // Play stone placement sound
-        function playStoneSound() {
-            // Simulate sound
-            console.log('Stone placement sound');
-        }
-        
-        // Play win sound
-        function playWinSound() {
-            // Simulate sound
-            console.log('Win sound');
-        }
-        
-        // Play error sound
-        function playErrorSound() {
-            // Simulate sound
-            console.log('Error sound');
+        // Sound wrapper functions
+        function playStonePlacementSound() {
+            // Use enhanced stone sound if enabled, otherwise use basic stone sound
+            if (useEnhancedSounds) {
+                playEnhancedStoneSound();
+            } else {
+                playStoneSound();
+            }
         }
         
         // Handle window resize
