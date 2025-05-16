@@ -1,0 +1,1285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gomoku Master</title>
+    <style>
+        :root {
+            --primary-color: #1a73e8;
+            --secondary-color: #ffd700;
+            --dark-color: #333;
+            --light-color: #f8f9fa;
+            --board-color: #e6c88e;
+            --board-line: #8d6e63;
+            --black-stone: #222;
+            --white-stone: #fff;
+            --shadow-color: rgba(0, 0, 0, 0.2);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: var(--light-color);
+            color: var(--dark-color);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 1rem;
+            text-align: center;
+            box-shadow: 0 2px 4px var(--shadow-color);
+        }
+        
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+        }
+        
+        .logo-icon {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: radial-gradient(circle, var(--black-stone) 48%, var(--white-stone) 49%, var(--white-stone) 51%, var(--black-stone) 52%);
+            margin-right: 10px;
+        }
+        
+        main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+        }
+        
+        @media (min-width: 768px) {
+            main {
+                flex-direction: row;
+                align-items: flex-start;
+                justify-content: center;
+                gap: 2rem;
+            }
+        }
+        
+        .game-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            max-width: 600px;
+        }
+        
+        .board-container {
+            position: relative;
+            margin: 1rem 0;
+            width: 100%;
+            max-width: 600px;
+        }
+        
+        .board {
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            background-color: var(--board-color);
+            border: 2px solid var(--board-line);
+            box-shadow: 0 4px 8px var(--shadow-color);
+            position: relative;
+            touch-action: manipulation;
+        }
+        
+        .grid-lines {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+        
+        .stone {
+            position: absolute;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            box-shadow: 0 2px 4px var(--shadow-color);
+            transition: all 0.2s ease;
+        }
+        
+        .stone.black {
+            background-color: var(--black-stone);
+            background: radial-gradient(circle at 30% 30%, #555, var(--black-stone));
+        }
+        
+        .stone.white {
+            background-color: var(--white-stone);
+            background: radial-gradient(circle at 30% 30%, white, #eee);
+        }
+        
+        .controls {
+            background-color: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 4px var(--shadow-color);
+            width: 100%;
+            max-width: 400px;
+            margin-top: 2rem;
+        }
+        
+        @media (min-width: 768px) {
+            .controls {
+                margin-top: 0;
+            }
+        }
+        
+        .control-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .control-group:last-child {
+            margin-bottom: 0;
+        }
+        
+        h2 {
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+            color: var(--primary-color);
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+        
+        select, button {
+            width: 100%;
+            padding: 0.5rem;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+            font-size: 1rem;
+        }
+        
+        button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 0.75rem;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            font-weight: bold;
+        }
+        
+        button:hover {
+            background-color: #0d5bcd;
+        }
+        
+        button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+        
+        .status {
+            background-color: white;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-top: 1rem;
+            box-shadow: 0 2px 4px var(--shadow-color);
+            width: 100%;
+            text-align: center;
+        }
+        
+        .player-indicator {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 0.5rem;
+        }
+        
+        .player {
+            display: flex;
+            align-items: center;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            opacity: 0.7;
+            transition: opacity 0.3s;
+        }
+        
+        .player.active {
+            opacity: 1;
+            font-weight: bold;
+            background-color: rgba(0, 0, 0, 0.05);
+        }
+        
+        .player-stone {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        
+        .player-stone.black {
+            background-color: var(--black-stone);
+        }
+        
+        .player-stone.white {
+            background-color: var(--white-stone);
+            border: 1px solid #ddd;
+        }
+        
+        .advanced-settings {
+            margin-top: 1rem;
+            border-top: 1px solid #eee;
+            padding-top: 1rem;
+        }
+        
+        .advanced-toggle {
+            background: none;
+            border: none;
+            color: var(--primary-color);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            padding: 0;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .advanced-toggle:hover {
+            text-decoration: underline;
+        }
+        
+        .advanced-content {
+            display: none;
+            padding: 0.5rem 0;
+        }
+        
+        .advanced-content.visible {
+            display: block;
+        }
+        
+        .algorithm-info {
+            font-size: 0.9rem;
+            color: #666;
+            margin-top: 0.5rem;
+            padding: 0.5rem;
+            background-color: #f5f5f5;
+            border-radius: 4px;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 100;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal.visible {
+            display: flex;
+        }
+        
+        .modal-content {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 8px;
+            max-width: 700px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .modal-title {
+            font-size: 1.5rem;
+            color: var(--primary-color);
+        }
+        
+        .close-button {
+            background-color: #f0f0f0;
+            border: 1px solid #ddd;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.2s ease;
+        }
+        
+        .close-button:hover {
+            background-color: #e0e0e0;
+            color: #000;
+        }
+        
+        .name-input {
+            margin-bottom: 1rem;
+        }
+        
+        .name-input input {
+            width: 100%;
+            padding: 0.5rem;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+            font-size: 1rem;
+        }
+        
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid #eee;
+            margin-bottom: 1rem;
+        }
+        
+        .tab {
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+        }
+        
+        .tab.active {
+            border-bottom-color: var(--primary-color);
+            color: var(--primary-color);
+            font-weight: bold;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .help-section {
+            margin-bottom: 1.5rem;
+        }
+        
+        .help-section h3 {
+            margin-bottom: 0.5rem;
+            color: var(--primary-color);
+        }
+        
+        .help-section p {
+            margin-bottom: 0.5rem;
+            line-height: 1.5;
+        }
+        
+        .win-pattern {
+            display: flex;
+            justify-content: center;
+            margin: 1rem 0;
+        }
+        
+        .pattern-stone {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            margin: 0 2px;
+            background-color: var(--black-stone);
+        }
+        
+        .help-icon {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 40px;
+            height: 40px;
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.5rem;
+            cursor: pointer;
+            box-shadow: 0 2px 5px var(--shadow-color);
+            z-index: 10;
+        }
+        
+        footer {
+            background-color: var(--primary-color);
+            color: white;
+            text-align: center;
+            padding: 1rem;
+            margin-top: 2rem;
+        }
+        
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .footer-content p {
+            margin: 0.5rem 0;
+        }
+        
+        .footer-content a {
+            color: var(--secondary-color);
+            text-decoration: none;
+        }
+        
+        .footer-content a:hover {
+            text-decoration: underline;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .winner-message {
+            animation: pulse 1s infinite;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <div class="logo">
+                <span class="logo-icon"></span>
+                Gomoku Master
+            </div>
+        </div>
+    </header>
+    
+    <main>
+        <div class="game-container">
+            <div class="board-container">
+                <div class="board" id="board">
+                    <canvas class="grid-lines" id="gridLines"></canvas>
+                </div>
+            </div>
+            
+            <div class="status">
+                <div id="gameStatus">Configure game settings and click "Start Game"</div>
+                <div class="player-indicator">
+                    <div class="player black" id="player1">
+                        <div class="player-stone black"></div>
+                        <span id="player1Name">Player 1 (Black)</span>
+                    </div>
+                    <div class="player white" id="player2">
+                        <div class="player-stone white"></div>
+                        <span id="player2Name">Player 2 (White)</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="controls">
+            <div class="control-group">
+                <h2>Game Settings</h2>
+                <label for="boardSize">Board Size:</label>
+                <select id="boardSize">
+                    <option value="9">9×9</option>
+                    <option value="15" selected>15×15</option>
+                    <option value="19">19×19</option>
+                </select>
+            </div>
+            
+            <div class="control-group">
+                <label for="difficulty">Difficulty Level:</label>
+                <select id="difficulty">
+                    <option value="1">Level 1 (Easy)</option>
+                    <option value="2">Level 2</option>
+                    <option value="3" selected>Level 3 (Medium)</option>
+                    <option value="4">Level 4</option>
+                    <option value="5">Level 5 (Hard)</option>
+                </select>
+            </div>
+            
+            <div class="control-group">
+                <label for="opponent">Opponent:</label>
+                <select id="opponent">
+                    <option value="ai" selected>Gomoku Master AI</option>
+                    <option value="human">Human Player</option>
+                </select>
+            </div>
+            
+            <div class="control-group">
+                <button id="startButton">Start Game</button>
+                <button id="resetButton" disabled>Reset Game</button>
+            </div>
+            
+            <div class="advanced-settings">
+                <button class="advanced-toggle" id="advancedToggle">
+                    Advanced Settings ▼
+                </button>
+                <div class="advanced-content" id="advancedContent">
+                    <label for="algorithm">AI Algorithm:</label>
+                    <select id="algorithm" disabled>
+                        <option value="negamax" selected>Negamax</option>
+                        <option value="minimax" disabled>Minimax (Coming Soon)</option>
+                        <option value="mcts" disabled>Monte Carlo Tree Search (Coming Soon)</option>
+                    </select>
+                    <div class="algorithm-info" id="algorithmInfo">
+                        Using: Negamax (depth 3) – A recursive decision algorithm for two-player zero-sum games.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <div class="help-icon" id="helpButton">?</div>
+    
+    <div class="modal" id="nameModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Enter Player Names</h2>
+                <button class="close-button" id="closeNameModal">×</button>
+            </div>
+            <div class="name-input">
+                <label for="player1Input">Player 1 (Black):</label>
+                <input type="text" id="player1Input" placeholder="Enter your name">
+            </div>
+            <div class="name-input" id="player2InputContainer">
+                <label for="player2Input">Player 2 (White):</label>
+                <input type="text" id="player2Input" placeholder="Enter player 2 name">
+            </div>
+            <button id="saveNamesButton">Start Game</button>
+        </div>
+    </div>
+    
+    <div class="modal" id="helpModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Gomoku Master Help</h2>
+                <button class="close-button" id="closeHelpModal">×</button>
+            </div>
+            <div class="tabs">
+                <div class="tab active" data-tab="rules">Rules</div>
+                <div class="tab" data-tab="strategy">Strategy</div>
+                <div class="tab" data-tab="controls">Controls</div>
+            </div>
+            <div class="tab-content active" id="rulesTab">
+                <div class="help-section">
+                    <h3>Game Objective</h3>
+                    <p>Gomoku (also known as Five in a Row) is a classic board game where players take turns placing stones on the board.</p>
+                    <p>The goal is to be the first to form an unbroken line of five stones horizontally, vertically, or diagonally.</p>
+                </div>
+                <div class="help-section">
+                    <h3>How to Play</h3>
+                    <p>1. Black always goes first, followed by White.</p>
+                    <p>2. Players take turns placing one stone per turn on any empty intersection.</p>
+                    <p>3. Once placed, stones cannot be moved or removed.</p>
+                    <p>4. The first player to form five stones in a row wins.</p>
+                    <p>5. If the board fills up with no winner, the game is a draw.</p>
+                </div>
+                <div class="help-section">
+                    <h3>Winning Patterns</h3>
+                    <p>Here are examples of winning patterns (five in a row):</p>
+                    <p>Horizontal:</p>
+                    <div class="win-pattern">
+                        <div class="pattern-stone"></div>
+                        <div class="pattern-stone"></div>
+                        <div class="pattern-stone"></div>
+                        <div class="pattern-stone"></div>
+                        <div class="pattern-stone"></div>
+                    </div>
+                    <p>Vertical:</p>
+                    <div class="win-pattern" style="flex-direction: column;">
+                        <div class="pattern-stone"></div>
+                        <div class="pattern-stone"></div>
+                        <div class="pattern-stone"></div>
+                        <div class="pattern-stone"></div>
+                        <div class="pattern-stone"></div>
+                    </div>
+                    <p>Diagonal:</p>
+                    <div style="display: flex; justify-content: center; margin: 1rem 0;">
+                        <div style="position: relative; width: 100px; height: 100px;">
+                            <div class="pattern-stone" style="position: absolute; top: 0; left: 0;"></div>
+                            <div class="pattern-stone" style="position: absolute; top: 20px; left: 20px;"></div>
+                            <div class="pattern-stone" style="position: absolute; top: 40px; left: 40px;"></div>
+                            <div class="pattern-stone" style="position: absolute; top: 60px; left: 60px;"></div>
+                            <div class="pattern-stone" style="position: absolute; top: 80px; left: 80px;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-content" id="strategyTab">
+                <div class="help-section">
+                    <h3>Basic Strategy</h3>
+                    <p>1. <strong>Control the center</strong> - The center of the board provides more opportunities to form winning lines.</p>
+                    <p>2. <strong>Block your opponent</strong> - If your opponent has three or four stones in a row, block them immediately.</p>
+                    <p>3. <strong>Create multiple threats</strong> - Try to create positions where you have multiple ways to win.</p>
+                </div>
+                <div class="help-section">
+                    <h3>Advanced Techniques</h3>
+                    <p><strong>Fork</strong> - Create two winning threats simultaneously, forcing your opponent to defend one while you win with the other.</p>
+                    <p><strong>Overline</strong> - In standard Gomoku, creating more than five stones in a row still counts as a win.</p>
+                    <p><strong>Defense</strong> - Sometimes the best offense is a good defense. Block your opponent's potential winning moves.</p>
+                </div>
+                <div class="help-section">
+                    <h3>Against the AI</h3>
+                    <p>The Gomoku Master AI uses different algorithms and search depths based on the difficulty level:</p>
+                    <p>- <strong>Level 1-2:</strong> Basic strategy with limited lookahead</p>
+                    <p>- <strong>Level 3:</strong> Intermediate strategy with moderate search depth</p>
+                    <p>- <strong>Level 4-5:</strong> Advanced strategy with deeper search and pattern recognition</p>
+                </div>
+            </div>
+            <div class="tab-content" id="controlsTab">
+                <div class="help-section">
+                    <h3>Game Controls</h3>
+                    <p><strong>Board Size:</strong> Choose between 9×9 (faster games), 15×15 (standard), or 19×19 (traditional Go board size).</p>
+                    <p><strong>Difficulty Level:</strong> Select from 5 levels of AI difficulty (only applies when playing against the AI).</p>
+                    <p><strong>Opponent:</strong> Choose between playing against the AI or another human player.</p>
+                </div>
+                <div class="help-section">
+                    <h3>Playing the Game</h3>
+                    <p>1. Configure your game settings</p>
+                    <p>2. Click "Start Game" and enter player names</p>
+                    <p>3. Click on any intersection to place your stone</p>
+                    <p>4. When the game ends, click "Reset Game" to play again</p>
+                </div>
+                <div class="help-section">
+                    <h3>Advanced Settings</h3>
+                    <p>The Advanced Settings section allows you to view and select different AI algorithms:</p>
+                    <p><strong>Negamax:</strong> A variant of minimax that simplifies the implementation for zero-sum games.</p>
+                    <p>Additional algorithms will be available in future updates.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <footer>
+        <div class="footer-content">
+            <p>Gomoku Master - A classic Five in a Row game</p>
+            <p>Created with ❤️ by Master AI KAU Students </p>
+        </div>
+    </footer>
+    
+    <script>
+        // Game state
+        let gameState = {
+            board: [],
+            boardSize: 15,
+            difficulty: 3,
+            opponent: 'ai',
+            algorithm: 'negamax',
+            gameActive: false,
+            currentPlayer: 1, // 1 for Black, 2 for White
+            gameId: null,
+            winner: null,
+            player1Name: 'Player 1',
+            player2Name: 'Gomoku Master AI'
+        };
+        
+        // DOM elements
+        const boardElement = document.getElementById('board');
+        const gridLinesCanvas = document.getElementById('gridLines');
+        const gameStatusElement = document.getElementById('gameStatus');
+        const player1Element = document.getElementById('player1');
+        const player2Element = document.getElementById('player2');
+        const player1NameElement = document.getElementById('player1Name');
+        const player2NameElement = document.getElementById('player2Name');
+        const boardSizeSelect = document.getElementById('boardSize');
+        const difficultySelect = document.getElementById('difficulty');
+        const opponentSelect = document.getElementById('opponent');
+        const algorithmSelect = document.getElementById('algorithm');
+        const algorithmInfo = document.getElementById('algorithmInfo');
+        const startButton = document.getElementById('startButton');
+        const resetButton = document.getElementById('resetButton');
+        const advancedToggle = document.getElementById('advancedToggle');
+        const advancedContent = document.getElementById('advancedContent');
+        const nameModal = document.getElementById('nameModal');
+        const closeNameModal = document.getElementById('closeNameModal');
+        const player1Input = document.getElementById('player1Input');
+        const player2Input = document.getElementById('player2Input');
+        const player2InputContainer = document.getElementById('player2InputContainer');
+        const saveNamesButton = document.getElementById('saveNamesButton');
+        const helpButton = document.getElementById('helpButton');
+        const helpModal = document.getElementById('helpModal');
+        const closeHelpModal = document.getElementById('closeHelpModal');
+        const tabs = document.querySelectorAll('.tab');
+        const tabContents = document.querySelectorAll('.tab-content');
+        
+        // Stone placement sound (simulated)
+        const placeStoneSound = new Audio();
+        const winSound = new Audio();
+        const errorSound = new Audio();
+        
+        // Initialize the game
+        function initGame() {
+            // Set up event listeners
+            boardElement.addEventListener('click', handleBoardClick);
+            startButton.addEventListener('click', showNameModal);
+            resetButton.addEventListener('click', resetGame);
+            advancedToggle.addEventListener('click', toggleAdvancedSettings);
+            closeNameModal.addEventListener('click', () => nameModal.classList.remove('visible'));
+            saveNamesButton.addEventListener('click', startGame);
+            helpButton.addEventListener('click', () => helpModal.classList.add('visible'));
+            closeHelpModal.addEventListener('click', () => helpModal.classList.remove('visible'));
+            
+            // Tab navigation in help modal
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const tabName = tab.getAttribute('data-tab');
+                    
+                    // Update active tab
+                    tabs.forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+                    
+                    // Update active content
+                    tabContents.forEach(content => content.classList.remove('active'));
+                    document.getElementById(`${tabName}Tab`).classList.add('active');
+                });
+            });
+            
+            // Update opponent selection
+            opponentSelect.addEventListener('change', updateOpponentSelection);
+            
+            // Update algorithm info
+            difficultySelect.addEventListener('change', updateAlgorithmInfo);
+            algorithmSelect.addEventListener('change', updateAlgorithmInfo);
+            
+            // Draw initial board
+            updateBoardSize();
+            drawBoard();
+            
+            // Update algorithm info
+            updateAlgorithmInfo();
+            
+            // Update opponent selection
+            updateOpponentSelection();
+        }
+        
+        // Update opponent selection
+        function updateOpponentSelection() {
+            const opponent = opponentSelect.value;
+            if (opponent === 'ai') {
+                player2NameElement.textContent = 'Gomoku Master AI (White)';
+                difficultySelect.disabled = false;
+                algorithmSelect.disabled = false;
+            } else {
+                player2NameElement.textContent = 'Player 2 (White)';
+                difficultySelect.disabled = true;
+                algorithmSelect.disabled = true;
+            }
+        }
+        
+        // Update algorithm info
+        function updateAlgorithmInfo() {
+            const algorithm = algorithmSelect.value;
+            const difficulty = difficultySelect.value;
+            const depth = Math.max(1, parseInt(difficulty));
+            
+            if (algorithm === 'negamax') {
+                algorithmInfo.textContent = `Using: Negamax (depth ${depth}) – A recursive decision algorithm for two-player zero-sum games.`;
+            } else if (algorithm === 'minimax') {
+                algorithmInfo.textContent = `Using: Minimax (depth ${depth}) – A decision-making algorithm that minimizes the possible loss for a worst case scenario.`;
+            } else if (algorithm === 'mcts') {
+                algorithmInfo.textContent = `Using: Monte Carlo Tree Search – A heuristic search algorithm for decision processes.`;
+            }
+        }
+        
+        // Toggle advanced settings
+        function toggleAdvancedSettings() {
+            advancedContent.classList.toggle('visible');
+            advancedToggle.textContent = advancedContent.classList.contains('visible') 
+                ? 'Advanced Settings ▲' 
+                : 'Advanced Settings ▼';
+        }
+        
+        // Show name modal
+        function showNameModal() {
+            // Update game settings
+            gameState.boardSize = parseInt(boardSizeSelect.value);
+            gameState.difficulty = parseInt(difficultySelect.value);
+            gameState.opponent = opponentSelect.value;
+            gameState.algorithm = algorithmSelect.value;
+            
+            // Show/hide player 2 input based on opponent
+            if (gameState.opponent === 'ai') {
+                player2InputContainer.style.display = 'none';
+                player2Input.value = 'Gomoku Master AI';
+            } else {
+                player2InputContainer.style.display = 'block';
+                player2Input.value = '';
+            }
+            
+            // Show modal
+            nameModal.classList.add('visible');
+            player1Input.focus();
+        }
+        
+        // Start the game
+        function startGame() {
+            // Get player names
+            gameState.player1Name = player1Input.value.trim() || 'Player 1';
+            gameState.player2Name = player2Input.value.trim() || (gameState.opponent === 'ai' ? 'Gomoku Master AI' : 'Player 2');
+            
+            // Update player name displays
+            player1NameElement.textContent = `${gameState.player1Name} (Black)`;
+            player2NameElement.textContent = `${gameState.player2Name} (White)`;
+            
+            // Hide modal
+            nameModal.classList.remove('visible');
+            
+            // Initialize board
+            updateBoardSize();
+            initializeBoard();
+            drawBoard();
+            
+            // Update game state
+            gameState.gameActive = true;
+            gameState.currentPlayer = 1; // Black goes first
+            gameState.winner = null;
+            gameState.gameId = Date.now().toString();
+            
+            // Update UI
+            updateGameStatus();
+            updatePlayerIndicator();
+            startButton.disabled = true;
+            resetButton.disabled = false;
+            boardSizeSelect.disabled = true;
+            difficultySelect.disabled = true;
+            opponentSelect.disabled = true;
+            
+            // Simulate API call
+            console.log('Game started:', gameState);
+        }
+        
+        // Reset the game
+        function resetGame() {
+            // Reset game state
+            gameState.gameActive = false;
+            gameState.winner = null;
+            
+            // Update UI
+            clearBoard();
+            gameStatusElement.textContent = 'Configure game settings and click "Start Game"';
+            player1Element.classList.remove('active');
+            player2Element.classList.remove('active');
+            startButton.disabled = false;
+            resetButton.disabled = true;
+            boardSizeSelect.disabled = false;
+            difficultySelect.disabled = false;
+            opponentSelect.disabled = false;
+            
+            // Simulate API call
+            console.log('Game reset');
+        }
+        
+        // Initialize the board
+        function initializeBoard() {
+            gameState.board = [];
+            for (let i = 0; i < gameState.boardSize; i++) {
+                gameState.board[i] = [];
+                for (let j = 0; j < gameState.boardSize; j++) {
+                    gameState.board[i][j] = 0; // 0 for empty, 1 for Black, 2 for White
+                }
+            }
+        }
+        
+        // Update board size
+        function updateBoardSize() {
+            gameState.boardSize = parseInt(boardSizeSelect.value);
+            initializeBoard();
+            clearBoard();
+            drawBoard();
+        }
+        
+        // Clear the board
+        function clearBoard() {
+            // Remove all stones
+            const stones = boardElement.querySelectorAll('.stone');
+            stones.forEach(stone => stone.remove());
+            
+            // Clear the board array
+            initializeBoard();
+        }
+        
+        // Draw the board
+        function drawBoard() {
+            // Set up the grid lines canvas
+            const ctx = gridLinesCanvas.getContext('2d');
+            const boardSize = gameState.boardSize;
+            const width = boardElement.clientWidth;
+            const height = boardElement.clientHeight;
+            
+            // Set canvas size
+            gridLinesCanvas.width = width;
+            gridLinesCanvas.height = height;
+            
+            // Calculate cell size
+            const cellSize = width / (boardSize - 1);
+            
+            // Draw grid lines
+            ctx.strokeStyle = '#8d6e63';
+            ctx.lineWidth = 1;
+            
+            // Draw horizontal lines
+            for (let i = 0; i < boardSize; i++) {
+                ctx.beginPath();
+                ctx.moveTo(0, i * cellSize);
+                ctx.lineTo(width, i * cellSize);
+                ctx.stroke();
+            }
+            
+            // Draw vertical lines
+            for (let i = 0; i < boardSize; i++) {
+                ctx.beginPath();
+                ctx.moveTo(i * cellSize, 0);
+                ctx.lineTo(i * cellSize, height);
+                ctx.stroke();
+            }
+            
+            // Draw star points (for 19x19 and 15x15 boards)
+            if (boardSize === 19 || boardSize === 15) {
+                const starPoints = boardSize === 19 
+                    ? [[3, 3], [3, 9], [3, 15], [9, 3], [9, 9], [9, 15], [15, 3], [15, 9], [15, 15]]
+                    : [[3, 3], [3, 7], [3, 11], [7, 3], [7, 7], [7, 11], [11, 3], [11, 7], [11, 11]];
+                
+                ctx.fillStyle = '#8d6e63';
+                for (const [x, y] of starPoints) {
+                    ctx.beginPath();
+                    ctx.arc(x * cellSize, y * cellSize, 3, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            }
+            
+            // Draw existing stones
+            for (let i = 0; i < boardSize; i++) {
+                for (let j = 0; j < boardSize; j++) {
+                    if (gameState.board[i][j] !== 0) {
+                        drawStone(i, j, gameState.board[i][j]);
+                    }
+                }
+            }
+        }
+        
+        // Draw a stone
+        function drawStone(row, col, player) {
+            const boardSize = gameState.boardSize;
+            const width = boardElement.clientWidth;
+            const cellSize = width / (boardSize - 1);
+            const stoneSize = cellSize * 0.45;
+            
+            // Create stone element
+            const stone = document.createElement('div');
+            stone.className = `stone ${player === 1 ? 'black' : 'white'}`;
+            stone.style.width = `${stoneSize * 2}px`;
+            stone.style.height = `${stoneSize * 2}px`;
+            stone.style.left = `${col * cellSize}px`;
+            stone.style.top = `${row * cellSize}px`;
+            
+            // Add to board
+            boardElement.appendChild(stone);
+            
+            // Add animation
+            stone.style.transform = 'translate(-50%, -50%) scale(0)';
+            setTimeout(() => {
+                stone.style.transform = 'translate(-50%, -50%) scale(1)';
+            }, 10);
+            
+            // Play sound
+            playStoneSound();
+        }
+        
+        // Handle board click
+        function handleBoardClick(event) {
+            if (!gameState.gameActive || gameState.winner) return;
+            
+            // Get click coordinates relative to board
+            const rect = boardElement.getBoundingClientRect();
+            const x = event.clientX - rect.left;
+            const y = event.clientY - rect.top;
+            
+            // Convert to board coordinates
+            const boardSize = gameState.boardSize;
+            const width = boardElement.clientWidth;
+            const cellSize = width / (boardSize - 1);
+            
+            // Find nearest intersection
+            let col = Math.round(x / cellSize);
+            let row = Math.round(y / cellSize);
+            
+            // Check if valid
+            if (row < 0 || row >= boardSize || col < 0 || col >= boardSize) return;
+            
+            // Check if empty
+            if (gameState.board[row][col] !== 0) {
+                playErrorSound();
+                return;
+            }
+            
+            // Make move
+            makeMove(row, col);
+        }
+        
+        // Make a move
+        function makeMove(row, col) {
+            // Update board
+            gameState.board[row][col] = gameState.currentPlayer;
+            
+            // Draw stone
+            drawStone(row, col, gameState.currentPlayer);
+            
+            // Check for win
+            if (checkWin(row, col)) {
+                gameState.winner = gameState.currentPlayer;
+                gameState.gameActive = false;
+                updateGameStatus();
+                playWinSound();
+                return;
+            }
+            
+            // Check for draw
+            if (checkDraw()) {
+                gameState.gameActive = false;
+                updateGameStatus();
+                return;
+            }
+            
+            // Switch player
+            gameState.currentPlayer = gameState.currentPlayer === 1 ? 2 : 1;
+            updateGameStatus();
+            updatePlayerIndicator();
+            
+            // If playing against AI and it's AI's turn
+            if (gameState.opponent === 'ai' && gameState.currentPlayer === 2 && gameState.gameActive) {
+                // Simulate AI thinking
+                setTimeout(() => {
+                    makeAIMove();
+                }, 500);
+            }
+        }
+        
+        // Make AI move
+        function makeAIMove() {
+            // Simulate AI decision making
+            const move = findBestMove();
+            if (move) {
+                makeMove(move.row, move.col);
+            }
+        }
+        
+        // Find best move for AI
+        function findBestMove() {
+            const boardSize = gameState.boardSize;
+            const validMoves = [];
+            
+            // Collect all valid moves
+            for (let i = 0; i < boardSize; i++) {
+                for (let j = 0; j < boardSize; j++) {
+                    if (gameState.board[i][j] === 0) {
+                        validMoves.push({ row: i, col: j });
+                    }
+                }
+            }
+            
+            if (validMoves.length === 0) return null;
+            
+            // For difficulty level 1, make a random move
+            if (gameState.difficulty === 1) {
+                return validMoves[Math.floor(Math.random() * validMoves.length)];
+            }
+            
+            // Check for winning move
+            for (const move of validMoves) {
+                gameState.board[move.row][move.col] = 2; // White
+                if (checkWin(move.row, move.col)) {
+                    gameState.board[move.row][move.col] = 0; // Reset
+                    return move;
+                }
+                gameState.board[move.row][move.col] = 0; // Reset
+            }
+            
+            // Check for blocking opponent's winning move
+            for (const move of validMoves) {
+                gameState.board[move.row][move.col] = 1; // Black
+                if (checkWin(move.row, move.col)) {
+                    gameState.board[move.row][move.col] = 0; // Reset
+                    return move;
+                }
+                gameState.board[move.row][move.col] = 0; // Reset
+            }
+            
+            // For higher difficulties, use more advanced strategies
+            if (gameState.difficulty >= 3) {
+                // Find moves near existing stones
+                const nearMoves = validMoves.filter(move => {
+                    for (let dr = -1; dr <= 1; dr++) {
+                        for (let dc = -1; dc <= 1; dc++) {
+                            if (dr === 0 && dc === 0) continue;
+                            
+                            const r = move.row + dr;
+                            const c = move.col + dc;
+                            
+                            if (r >= 0 && r < boardSize && c >= 0 && c < boardSize && 
+                                gameState.board[r][c] !== 0) {
+                                return true;
+                            }
+                        }
+                    }
+                    return false;
+                });
+                
+                if (nearMoves.length > 0) {
+                    return nearMoves[Math.floor(Math.random() * nearMoves.length)];
+                }
+            }
+            
+            // If no strategic move found, prefer center area
+            const centerMoves = validMoves.filter(move => {
+                const centerDist = Math.abs(move.row - boardSize/2) + Math.abs(move.col - boardSize/2);
+                return centerDist < boardSize/3;
+            });
+            
+            if (centerMoves.length > 0) {
+                return centerMoves[Math.floor(Math.random() * centerMoves.length)];
+            }
+            
+            // Fallback to random move
+            return validMoves[Math.floor(Math.random() * validMoves.length)];
+        }
+        
+        // Check for win
+        function checkWin(row, col) {
+            const player = gameState.board[row][col];
+            const boardSize = gameState.boardSize;
+            const directions = [
+                [0, 1],  // horizontal
+                [1, 0],  // vertical
+                [1, 1],  // diagonal down-right
+                [1, -1]  // diagonal down-left
+            ];
+            
+            for (const [dr, dc] of directions) {
+                let count = 1;
+                
+                // Check in positive direction
+                for (let i = 1; i < 5; i++) {
+                    const r = row + dr * i;
+                    const c = col + dc * i;
+                    
+                    if (r < 0 || r >= boardSize || c < 0 || c >= boardSize || 
+                        gameState.board[r][c] !== player) {
+                        break;
+                    }
+                    
+                    count++;
+                }
+                
+                // Check in negative direction
+                for (let i = 1; i < 5; i++) {
+                    const r = row - dr * i;
+                    const c = col - dc * i;
+                    
+                    if (r < 0 || r >= boardSize || c < 0 || c >= boardSize || 
+                        gameState.board[r][c] !== player) {
+                        break;
+                    }
+                    
+                    count++;
+                }
+                
+                if (count >= 5) {
+                    return true;
+                }
+            }
+            
+            return false;
+        }
+        
+        // Check for draw
+        function checkDraw() {
+            const boardSize = gameState.boardSize;
+            
+            for (let i = 0; i < boardSize; i++) {
+                for (let j = 0; j < boardSize; j++) {
+                    if (gameState.board[i][j] === 0) {
+                        return false;
+                    }
+                }
+            }
+            
+            return true;
+        }
+        
+        // Update game status
+        function updateGameStatus() {
+            if (gameState.winner) {
+                const winnerName = gameState.winner === 1 ? gameState.player1Name : gameState.player2Name;
+                gameStatusElement.innerHTML = `<span class="winner-message">${winnerName} wins!</span>`;
+            } else if (!gameState.gameActive) {
+                gameStatusElement.textContent = 'Game over - Draw!';
+            } else {
+                const currentPlayerName = gameState.currentPlayer === 1 ? gameState.player1Name : gameState.player2Name;
+                gameStatusElement.textContent = `${currentPlayerName}'s turn`;
+            }
+        }
+        
+        // Update player indicator
+        function updatePlayerIndicator() {
+            if (gameState.currentPlayer === 1) {
+                player1Element.classList.add('active');
+                player2Element.classList.remove('active');
+            } else {
+                player1Element.classList.remove('active');
+                player2Element.classList.add('active');
+            }
+        }
+        
+        // Play stone placement sound
+        function playStoneSound() {
+            // Simulate sound
+            console.log('Stone placement sound');
+        }
+        
+        // Play win sound
+        function playWinSound() {
+            // Simulate sound
+            console.log('Win sound');
+        }
+        
+        // Play error sound
+        function playErrorSound() {
+            // Simulate sound
+            console.log('Error sound');
+        }
+        
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            drawBoard();
+        });
+        
+        // Initialize the game when the page loads
+        window.addEventListener('load', initGame);
+    </script>
+</body>
+</html>

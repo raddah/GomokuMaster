@@ -12,8 +12,8 @@ Welcome to Gomoku Master, a modern implementation of the classic Gomoku (Five in
 
 ### Installation & Running
 
-1. **Extract the package**
-   Extract the `gomoku-master-standalone.zip` file to any location on your computer.
+1. **Clone the repository or download the package directly and extract it**
+   Extract the `gomoku-master-v0.3.zip` file to any location on your computer.
 
 2. **Run the game**
    

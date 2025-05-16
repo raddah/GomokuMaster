@@ -533,3 +533,122 @@ class Gomoku:
         
         # Reset the easyAI game
         self.easyai_game = GomokuEasyAI(board_size=self.board_size, difficulty=self.difficulty)
+
+# Command-line interface for playing the game directly
+if __name__ == "__main__":
+    import sys
+    
+    # Display welcome message with color
+    print("\033[1;33mWelcome to Gomoku!\033[0m")
+    print("------------------")
+    
+    # Display game rules
+    print("The goal is to get five in a row (horizontally, vertically, or diagonally).")
+    print("Players take turns placing their stones on the board.")
+    print("\033[1;34mYou play as Black (X)\033[0m, \033[1;31mAI plays as White (O)\033[0m")
+    
+    # Ask for board size
+    while True:
+        try:
+            board_size = input("\nEnter board size (9, 13, 15, or 19) [default: 15]: ")
+            if board_size.strip() == "":
+                board_size = 15  # Default board size
+                break
+            board_size = int(board_size)
+            if board_size in [9, 13, 15, 19]:
+                break
+            else:
+                print("Invalid board size. Please enter 9, 13, 15, or 19.")
+        except ValueError:
+            print("Invalid input. Please enter a number.")
+    
+    # Ask for difficulty level
+    while True:
+        try:
+            difficulty = input("\nEnter difficulty level (1-5, where 5 is the hardest) [default: 3]: ")
+            if difficulty.strip() == "":
+                difficulty = 3  # Default difficulty
+                break
+            difficulty = int(difficulty)
+            if 1 <= difficulty <= 5:
+                break
+            else:
+                print("Invalid difficulty level. Please enter a number between 1 and 5.")
+        except ValueError:
+            print("Invalid input. Please enter a number.")
+    
+    # Ask for player's name
+    player_name = input("\nEnter your name [default: Player 1]: ")
+    if player_name.strip() == "":
+        player_name = "Player 1"  # Default name
+    
+    print(f"\nBoard size: {board_size}x{board_size}")
+    print(f"Difficulty: {difficulty}")
+    print("\nYou are playing as Black (X), AI is White (O)")
+    print("Enter moves as 'row col' (e.g., '7 7' for the center of a 15x15 board)")
+    print("Type 'quit' to exit")
+    print()
+    
+    # Create the game
+    game = Gomoku(board_size=board_size, difficulty=difficulty)
+    
+    # Print the board
+    def print_board():
+        # Print column numbers
+        print("  ", end="")
+        for j in range(game.board_size):
+            print(f"{j:2}", end="")
+        print()
+        
+        # Print rows
+        for i in range(game.board_size):
+            print(f"{i:2}", end="")
+            for j in range(game.board_size):
+                if game.board[i][j] == Player.NONE:
+                    print(" .", end="")
+                elif game.board[i][j] == Player.BLACK:
+                    print(f" \033[1;34mX\033[0m", end="")  # Blue X for human player
+                else:
+                    print(f" \033[1;31mO\033[0m", end="")  # Red O for AI player
+            print()
+    
+    # Game loop
+    while not game.game_over:
+        print_board()
+        
+        # Player's turn
+        if game.current_player == Player.BLACK:
+            while True:
+                try:
+                    move = input(f"\n\033[1;34m{player_name}'s turn (X)\033[0m\nEnter your move (row col): ")
+                    if move.lower() == "quit":
+                        print("Goodbye!")
+                        sys.exit(0)
+                    
+                    row, col = map(int, move.split())
+                    game.make_move(row, col)
+                    break
+                except ValueError:
+                    print("Invalid input. Please enter two integers separated by a space.")
+                except Exception as e:
+                    print(f"Error: {str(e)}")
+        
+        # AI's turn
+        else:
+            print(f"\n\033[1;31mAI Gomoku Master's turn (O)\033[0m")
+            print("AI is thinking...")
+            try:
+                row, col = game.ai_move()
+                print(f"AI plays: {row} {col}")
+            except Exception as e:
+                print(f"AI Error: {str(e)}")
+                break
+    
+    # Game over
+    print_board()
+    if game.winner == Player.BLACK:
+        print(f"\n\033[1;32m{player_name} wins!\033[0m")  # Green color for win message
+    elif game.winner == Player.WHITE:
+        print("\n\033[1;31mAI Gomoku Master wins!\033[0m")  # Red color for AI win message
+    else:
+        print("\n\033[1;33mIt's a draw!\033[0m")  # Yellow color for draw message
