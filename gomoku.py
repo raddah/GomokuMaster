@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
@@ -22,6 +23,16 @@ class Player(Enum):
 class EnhancedNegamax(EasyAI_Negamax):
     """Enhanced Negamax algorithm with timeout and iterative deepening"""
     
+=======
+from easyAI import TwoPlayerGame, Negamax as EasyAI_Negamax, Human_Player as EasyAI_Human_Player, AI_Player as EasyAI_AI_Player
+from easyAI.AI.TranspositionTable import TranspositionTable
+import time
+import random
+
+class Negamax(EasyAI_Negamax):
+    """Negamax algorithm with alpha-beta pruning, transposition tables, and iterative deepening."""
+
+>>>>>>> a54ca66b613e7942da9acfdf6ed5de4eed90a5f1
     def __init__(self, depth, scoring=None, win_score=100000, tt=None, timeout=None):
         """Initialize the Negamax algorithm.
 
@@ -71,25 +82,37 @@ class EnhancedNegamax(EasyAI_Negamax):
         """
         self.start_time = time.time()
         best_move = None
+<<<<<<< HEAD
         timed_out = False
         
+=======
+        best_score = float('-inf')
+        timed_out = False
+>>>>>>> a54ca66b613e7942da9acfdf6ed5de4eed90a5f1
         # Iterative deepening: try increasing depths until timeout or max depth
         for d in range(1, self.depth + 1):
             if self.is_timeout():
                 timed_out = True
                 break
+<<<<<<< HEAD
                 
+=======
+>>>>>>> a54ca66b613e7942da9acfdf6ed5de4eed90a5f1
             # Temporarily set self.depth for parent's __call__
             old_depth = self.depth
             self.depth = d
             move = super().__call__(game)
             self.depth = old_depth
+<<<<<<< HEAD
             
+=======
+>>>>>>> a54ca66b613e7942da9acfdf6ed5de4eed90a5f1
             if not self.is_timeout() and move is not None:
                 best_move = move
             elif self.is_timeout():
                 timed_out = True
                 break
+<<<<<<< HEAD
                 
         return best_move
 
@@ -97,17 +120,109 @@ class GomokuEasyAI(TwoPlayerGame):
     """EasyAI implementation of Gomoku game"""
     
     def __init__(self, board_size=15, difficulty=3):
+=======
+        if timed_out:
+            print("\033[1;35m[AI Notice] AI timed out and played the best move found so far.\033[0m")
+        return best_move
+
+class AI_Player(EasyAI_AI_Player):
+    """AI player for Gomoku game."""
+    
+    def __init__(self, AI_algo, name="AI Gomoku Master"):
+        """Initialize the AI player.
+        
+        Args:
+            AI_algo: The AI algorithm to use.
+            name: The name of the AI player (default: "AI Gomoku Master").
+        """
+        super().__init__(AI_algo)
+        self.name = name
+    
+    def ask_move(self, game):
+        """Ask the AI player for a move.
+        
+        Args:
+            game: The game instance.
+            
+        Returns:
+            tuple: A tuple (row, col) representing the position to place the stone.
+        """
+        # Get the move from the AI algorithm
+        return self.AI_algo(game)
+
+class Human_Player(EasyAI_Human_Player):
+    """Human player for Gomoku game."""
+    
+    def __init__(self, name=None):
+        """Initialize the human player.
+        
+        Args:
+            name: The name of the human player (default: None).
+        """
+        super().__init__()
+        self.name = name
+    
+    def ask_move(self, game):
+        """Ask the human player for a move.
+        
+        Args:
+            game: The game instance.
+            
+        Returns:
+            tuple: A tuple (row, col) representing the position to place the stone.
+        """
+        possible_moves = game.possible_moves()
+        
+        # Keep asking until a valid move is entered
+        while True:
+            try:
+                move_str = input(f"{self.name}, enter your move (row col): ")
+                row, col = map(int, move_str.split())
+                
+                # Check if the move is valid
+                if (row, col) in possible_moves:
+                    return (row, col)
+                else:
+                    print(f"Invalid move. Row and column must be between 0 and {game.board_size - 1}, and the cell must be empty.")
+            except ValueError:
+                print("Invalid input. Please enter two integers separated by a space.")
+
+class Gomoku(TwoPlayerGame):
+    """The game of Gomoku, also known as Five in a Row."""
+
+    def __init__(self, board_size=15, difficulty=3, players=None):
+>>>>>>> a54ca66b613e7942da9acfdf6ed5de4eed90a5f1
         """Initialize the game.
         
         Args:
             board_size: The size of the board (default: 15x15).
             difficulty: The difficulty level of the AI (1-5, default: 3).
+<<<<<<< HEAD
         """
         self.board_size = board_size
         self.board = [[0 for _ in range(self.board_size)] for _ in range(self.board_size)]
         self.current_player = 1  # Player 1 starts
         self.last_move = None
         
+=======
+            players: A list of two players (default: [Human_Player(), AI_Player(Negamax(difficulty))]).
+        """
+        self.board_size = board_size
+        self.board = [[0 for _ in range(self.board_size)] for _ in range(self.board_size)]
+        
+        # Set the difficulty level
+        if difficulty < 1:
+            difficulty = 1
+        elif difficulty > 5:
+            difficulty = 5
+        
+        # Create the AI player with the appropriate difficulty level
+        ai_algo = Negamax(depth=difficulty, timeout=10)  # 10 seconds timeout
+        
+        self.players = players or [Human_Player(), AI_Player(ai_algo)]
+        self.current_player = 1  # Player 1 starts
+
+>>>>>>> a54ca66b613e7942da9acfdf6ed5de4eed90a5f1
     def possible_moves(self):
         """Return a list of possible moves (empty cells) as (row, col) tuples."""
         moves = []
@@ -125,7 +240,10 @@ class GomokuEasyAI(TwoPlayerGame):
         """
         row, col = move
         self.board[row][col] = self.current_player
+<<<<<<< HEAD
         self.last_move = move
+=======
+>>>>>>> a54ca66b613e7942da9acfdf6ed5de4eed90a5f1
 
     def unmake_move(self, move):
         """Undo a move from the board.
@@ -152,8 +270,31 @@ class GomokuEasyAI(TwoPlayerGame):
             return True
         return False
 
+<<<<<<< HEAD
     def scoring(self):
         """Return a score for the current player."""
+=======
+    def show(self):
+        """Print the board."""
+        for row in self.board:
+            print(" ".join(["." if cell == 0 else ("O" if cell == 1 else "X") for cell in row]))
+
+    def scoring(self):
+        """Return a score for the current player.
+        
+        The score is based on the number of stones in a row:
+        - 5 in a row: 10000 points
+        - 4 in a row (open): 1000 points
+        - 4 in a row (closed): 100 points
+        - 3 in a row (open): 100 points
+        - 3 in a row (closed): 10 points
+        - 2 in a row (open): 10 points
+        - 2 in a row (closed): 1 point
+        
+        Returns:
+            int: The score for the current player.
+        """
+>>>>>>> a54ca66b613e7942da9acfdf6ed5de4eed90a5f1
         if self.lose():
             return -10000
         
@@ -273,6 +414,7 @@ class GomokuEasyAI(TwoPlayerGame):
         
         return 0
 
+<<<<<<< HEAD
     def five_in_a_row(self, player):
         """Check if the player has five in a row.
         
@@ -281,6 +423,16 @@ class GomokuEasyAI(TwoPlayerGame):
             
         Returns:
             bool: True if the player has five in a row, False otherwise.
+=======
+    def five_in_a_row(self, opponent):
+        """Check if the opponent has five in a row.
+        
+        Args:
+            opponent: The player to check for five in a row (1 or 2).
+            
+        Returns:
+            bool: True if the opponent has five in a row, False otherwise.
+>>>>>>> a54ca66b613e7942da9acfdf6ed5de4eed90a5f1
         """
         size = self.board_size
         board = self.board
@@ -292,34 +444,67 @@ class GomokuEasyAI(TwoPlayerGame):
         # Check rows
         for i in range(size):
             for j in range(size - 4):
+<<<<<<< HEAD
                 if all(board[i][j + k] == player for k in range(5)):
+=======
+                if all(board[i][j + k] == opponent for k in range(5)):
+>>>>>>> a54ca66b613e7942da9acfdf6ed5de4eed90a5f1
                     return True
 
         # Check columns
         for i in range(size - 4):
             for j in range(size):
+<<<<<<< HEAD
                 if all(board[i + k][j] == player for k in range(5)):
+=======
+                if all(board[i + k][j] == opponent for k in range(5)):
+>>>>>>> a54ca66b613e7942da9acfdf6ed5de4eed90a5f1
                     return True
 
         # Check diagonals (top-left to bottom-right)
         for i in range(size - 4):
             for j in range(size - 4):
+<<<<<<< HEAD
                 if all(board[i + k][j + k] == player for k in range(5)):
+=======
+                if all(board[i + k][j + k] == opponent for k in range(5)):
+>>>>>>> a54ca66b613e7942da9acfdf6ed5de4eed90a5f1
                     return True
 
         # Check diagonals (top-right to bottom-left)
         for i in range(size - 4):
             for j in range(4, size):
+<<<<<<< HEAD
                 if all(board[i + k][j - k] == player for k in range(5)):
+=======
+                if all(board[i + k][j - k] == opponent for k in range(5)):
+>>>>>>> a54ca66b613e7942da9acfdf6ed5de4eed90a5f1
                     return True
 
         return False
 
+<<<<<<< HEAD
+=======
+    def __str__(self):
+        """Return a string representation of the board."""
+        # Add column numbers
+        s = "  " + " ".join(str(i) for i in range(self.board_size)) + "\n"
+        # Add row numbers and board
+        for i, row in enumerate(self.board):
+            s += str(i) + " " + " ".join([
+                "." if cell == 0 else 
+                ("\033[1;34mO\033[0m" if cell == 1 else "\033[1;31mX\033[0m") 
+                for cell in row
+            ]) + "\n"
+        return s
+
+>>>>>>> a54ca66b613e7942da9acfdf6ed5de4eed90a5f1
     def ttentry(self):
         """Return a hashable representation of the board and current player for the transposition table."""
         # Flatten the board and add the current player to the tuple
         return tuple(tuple(row) for row in self.board), self.current_player
 
+<<<<<<< HEAD
 class Gomoku:
     """
     Gomoku game implementation with configurable board size and AI difficulty
@@ -551,6 +736,70 @@ if __name__ == "__main__":
     while True:
         try:
             board_size = input("\nEnter board size (9, 13, 15, or 19) [default: 15]: ")
+=======
+    def play(self, verbose=True):
+        """Play the game."""
+        if verbose:
+            # Display welcome message
+            print("\033[1;33mWelcome to Gomoku!\033[0m")
+            print("------------------")
+            
+            # Display game rules with same color formatting
+            try:
+                with open('game_rules.md', 'r') as f:
+                    print("\033[1;36m")  # Cyan color for header
+                    print("="*50)
+                    print(f.read())
+                    print("="*50)
+                    print("\033[0m")  # Reset color
+            except FileNotFoundError:
+                print("The goal is to get five in a row (horizontally, vertically, or diagonally).")
+                print("Players take turns placing their stones on the board.")
+            
+            print(f"\n\033[1;34m{self.players[0].name}: O\033[0m, \033[1;31m{self.players[1].name}: X\033[0m")
+            print("To make a move, enter the row and column number (e.g., '2 3' for row 2, column 3).")
+            print(self)
+
+        while not self.is_over():
+            # Get the move from the current player
+            if verbose:
+                player_name = self.players[self.current_player - 1].name
+                if self.current_player == 1:  # Human player
+                    print(f"\n\033[1;34m{player_name}'s turn (O)\033[0m")  # Blue for human
+                else:  # AI player
+                    print(f"\n\033[1;31m{player_name}'s turn (X)\033[0m")  # Red for AI
+            
+            # Get the move from the current player
+            move = self.player.ask_move(self)
+            
+            # Make the move
+            self.make_move(move)
+            
+            # Show the board
+            if verbose:
+                print(self)
+            
+            # Switch to the next player
+            self.current_player = 3 - self.current_player
+        
+        # Game over
+        if verbose:
+            if self.lose():
+                winner_name = self.players[2 - self.current_player].name
+                print(f"\n\033[1;32m{winner_name} wins!\033[0m")  # Green color for win message
+            elif not self.possible_moves():
+                print("\n\033[1;33mIt's a draw!\033[0m")  # Yellow color for draw message
+
+if __name__ == "__main__":
+    """Play the game."""
+    print("Welcome to Gomoku!")
+    print("------------------")
+    
+    # Ask for board size
+    while True:
+        try:
+            board_size = input("Enter board size (9, 13, 15, or 19): ")
+>>>>>>> a54ca66b613e7942da9acfdf6ed5de4eed90a5f1
             if board_size.strip() == "":
                 board_size = 15  # Default board size
                 break
@@ -565,7 +814,11 @@ if __name__ == "__main__":
     # Ask for difficulty level
     while True:
         try:
+<<<<<<< HEAD
             difficulty = input("\nEnter difficulty level (1-5, where 5 is the hardest) [default: 3]: ")
+=======
+            difficulty = input("Enter difficulty level (1-5, where 5 is the hardest): ")
+>>>>>>> a54ca66b613e7942da9acfdf6ed5de4eed90a5f1
             if difficulty.strip() == "":
                 difficulty = 3  # Default difficulty
                 break
@@ -578,6 +831,7 @@ if __name__ == "__main__":
             print("Invalid input. Please enter a number.")
     
     # Ask for player's name
+<<<<<<< HEAD
     player_name = input("\nEnter your name [default: Player 1]: ")
     if player_name.strip() == "":
         player_name = "Player 1"  # Default name
@@ -652,3 +906,16 @@ if __name__ == "__main__":
         print("\n\033[1;31mAI Gomoku Master wins!\033[0m")  # Red color for AI win message
     else:
         print("\n\033[1;33mIt's a draw!\033[0m")  # Yellow color for draw message
+=======
+    player_name = input("Enter your name: ")
+    if player_name.strip() == "":
+        player_name = "Player 1"  # Default name
+    
+    # Create players
+    human_player = Human_Player(name=player_name)
+    ai_player = AI_Player(Negamax(depth=difficulty, timeout=10))
+    
+    # Create and play the game
+    gomoku = Gomoku(board_size=board_size, difficulty=difficulty, players=[human_player, ai_player])
+    gomoku.play()
+>>>>>>> a54ca66b613e7942da9acfdf6ed5de4eed90a5f1
