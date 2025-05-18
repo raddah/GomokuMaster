@@ -65,34 +65,53 @@ install_dependencies() {
 # Start the game
 start_game() {
   print_color "Starting Gomoku Master..."
-  
-  # Start the backend server
-  $PYTHON_CMD app.py &
+
+  # Start the backend server and capture the port from its output
+  PORT_LINE=""
+  PORT=""
+  # Start the server in the background and capture its output
+  { $PYTHON_CMD app.py 2>&1 | tee server_output.log & } &
   BACKEND_PID=$!
-  
-  # Wait for the backend to start
-  sleep 2
-  
+
+  # Wait for the backend to start and print the port
+  for i in {1..10}; do
+    sleep 1
+    if [ -f server_output.log ]; then
+      PORT_LINE=$(grep -m 1 "Starting Gomoku Master server on port" server_output.log)
+      if [ ! -z "$PORT_LINE" ]; then
+        PORT=$(echo "$PORT_LINE" | grep -oE '[0-9]+$')
+        break
+      fi
+    fi
+  done
+
+  # Fallback if port not found
+  if [ -z "$PORT" ]; then
+    PORT=5002
+    print_color "Warning: Could not detect port from server output. Defaulting to $PORT."
+  fi
+
   # Open the game in the browser
+  URL="http://localhost:$PORT"
   if [ "$OS" = "Mac" ]; then
-    open http://localhost:5001
+    open "$URL"
   elif [ "$OS" = "Linux" ]; then
     if command -v xdg-open &> /dev/null; then
-      xdg-open http://localhost:5001
+      xdg-open "$URL"
     elif command -v gnome-open &> /dev/null; then
-      gnome-open http://localhost:5001
+      gnome-open "$URL"
     else
-      print_color "Please open http://localhost:5000 in your browser"
+      print_color "Please open $URL in your browser"
     fi
   elif [ "$OS" = "Windows" ]; then
-    start http://localhost:5001
+    start "$URL"
   else
-    print_color "Please open http://localhost:5000 in your browser"
+    print_color "Please open $URL in your browser"
   fi
-  
+
   print_color "Gomoku Master is running!"
   print_color "Press Ctrl+C to stop the game"
-  
+
   # Wait for Ctrl+C
   trap "kill $BACKEND_PID; exit" INT TERM
   wait

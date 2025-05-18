@@ -505,11 +505,12 @@
             <div class="control-group">
                 <h2>Game Settings</h2>
                 <label for="boardSize">Board Size:</label>
-                <select id="boardSize">
-                    <option value="9">9×9</option>
-                    <option value="15" selected>15×15</option>
-                    <option value="19">19×19</option>
-                </select>
+<select id="boardSize">
+    <option value="9">9×9</option>
+    <option value="13">13×13</option>
+    <option value="15" selected>15×15</option>
+    <option value="19">19×19</option>
+</select>
             </div>
             
             <div class="control-group">
@@ -542,14 +543,16 @@
                 </button>
                 <div class="advanced-content" id="advancedContent">
                     <label for="algorithm">AI Algorithm:</label>
-                    <select id="algorithm" disabled>
-                        <option value="negamax" selected>Negamax</option>
-                        <option value="minimax" disabled>Minimax (Coming Soon)</option>
-                        <option value="mcts" disabled>Monte Carlo Tree Search (Coming Soon)</option>
-                    </select>
-                    <div class="algorithm-info" id="algorithmInfo">
-                        Using: Negamax (depth 3) – A recursive decision algorithm for two-player zero-sum games.
-                    </div>
+<select id="algorithm" disabled>
+    <option value="negamax" selected>Negamax</option>
+    <option value="sss">SSS*</option>
+    <option value="mcts" disabled>Monte Carlo Tree Search (Coming Soon)</option>
+</select>
+<div class="algorithm-info" id="algorithmInfo">
+    Using: Negamax (depth 3) – A recursive decision algorithm for two-player zero-sum games.
+    <br>
+    SSS*: State Space Search Star – A best-first search algorithm that can outperform alpha-beta pruning in some cases.
+</div>
                 </div>
             </div>
         </div>
@@ -808,6 +811,8 @@
             
             if (algorithm === 'negamax') {
                 algorithmInfo.textContent = `Using: Negamax (depth ${depth}) – A recursive decision algorithm for two-player zero-sum games.`;
+            } else if (algorithm === 'sss') {
+                algorithmInfo.textContent = `Using: SSS* (depth ${depth}) – State Space Search Star is a best-first search algorithm that can outperform alpha-beta pruning in some cases. SSS* explores the game tree in a different order and may find optimal moves more efficiently for certain positions.`;
             } else if (algorithm === 'minimax') {
                 algorithmInfo.textContent = `Using: Minimax (depth ${depth}) – A decision-making algorithm that minimizes the possible loss for a worst case scenario.`;
             } else if (algorithm === 'mcts') {

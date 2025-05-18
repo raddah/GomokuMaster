@@ -12,6 +12,7 @@ Gomoku is a two-player abstract strategy board game where the goal is to be the 
 - Customizable board sizes (9x9, 13x13, 15x15, 19x19)
 - Simple console interface
 - Intelligent AI that evaluates board positions and makes strategic moves
+- Supports two AI algorithms: Negamax (default) and SSS* (State Space Search Star)
 - Timeout mechanism to ensure the AI makes moves within a reasonable time
 
 ## Requirements
@@ -199,7 +200,10 @@ Using a virtual environment is recommended to avoid conflicts with other Python 
 
 ## AI Implementation
 
-The AI uses the Negamax algorithm with alpha-beta pruning and transposition tables to search for the best move. The search depth is determined by the difficulty level (1-5). The AI also has a timeout mechanism to ensure it makes moves within a reasonable time.
+The AI supports two algorithms:
+
+- **Negamax**: Uses alpha-beta pruning and transposition tables to search for the best move. The search depth is determined by the difficulty level (1-5). The AI also has a timeout mechanism to ensure it makes moves within a reasonable time.
+- **SSS\***: State Space Search Star is a best-first search algorithm that can outperform alpha-beta pruning in some cases. SSS* explores the game tree in a different order and may find optimal moves more efficiently for certain positions.
 
 The scoring function evaluates board positions based on the number of stones in a row:
 - 5 in a row: 10000 points
