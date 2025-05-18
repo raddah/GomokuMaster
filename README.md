@@ -1,5 +1,5 @@
 # Gomoku Game
-
+ 
 A Python implementation of the classic Gomoku (Five in a Row) game with AI using the easyAI library.
 
 ## Description
