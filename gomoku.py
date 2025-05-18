@@ -3,6 +3,9 @@ from easyAI.AI.TranspositionTable import TranspositionTable
 import time
 import random
 
+# Import SSS* algorithm
+from sss_algorithm import SSS
+
 class Negamax(EasyAI_Negamax):
     """Negamax algorithm with alpha-beta pruning, transposition tables, and iterative deepening."""
 
@@ -147,16 +150,27 @@ class Human_Player(EasyAI_Human_Player):
             except ValueError:
                 print("Invalid input. Please enter two integers separated by a space.")
 
+class SSS_AI_Player:
+    """AI player for Gomoku using the SSS* algorithm."""
+    def __init__(self, SSS_algo, name="SSS* AI Gomoku Master"):
+        self.SSS_algo = SSS_algo
+        self.name = name
+
+    def ask_move(self, game):
+        """Ask the SSS* AI player for a move."""
+        return self.SSS_algo(game)
+
 class Gomoku(TwoPlayerGame):
     """The game of Gomoku, also known as Five in a Row."""
 
-    def __init__(self, board_size=15, difficulty=3, players=None):
+    def __init__(self, board_size=15, difficulty=3, players=None, ai_algorithm="negamax"):
         """Initialize the game.
         
         Args:
             board_size: The size of the board (default: 15x15).
             difficulty: The difficulty level of the AI (1-5, default: 3).
             players: A list of two players (default: [Human_Player(), AI_Player(Negamax(difficulty))]).
+            ai_algorithm: The AI algorithm to use ("negamax" or "sss").
         """
         self.board_size = board_size
         self.board = [[0 for _ in range(self.board_size)] for _ in range(self.board_size)]
@@ -166,11 +180,16 @@ class Gomoku(TwoPlayerGame):
             difficulty = 1
         elif difficulty > 5:
             difficulty = 5
+
+        # Select AI algorithm
+        if ai_algorithm == "sss":
+            ai_algo = SSS(depth=difficulty, timeout=10)
+            ai_player = SSS_AI_Player(ai_algo)
+        else:
+            ai_algo = Negamax(depth=difficulty, timeout=10)
+            ai_player = AI_Player(ai_algo)
         
-        # Create the AI player with the appropriate difficulty level
-        ai_algo = Negamax(depth=difficulty, timeout=10)  # 10 seconds timeout
-        
-        self.players = players or [Human_Player(), AI_Player(ai_algo)]
+        self.players = players or [Human_Player(), ai_player]
         self.current_player = 1  # Player 1 starts
 
     def possible_moves(self):
