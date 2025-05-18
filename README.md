@@ -9,7 +9,7 @@ Gomoku is a two-player abstract strategy board game where the goal is to be the 
 ## Features
 
 - Play against an AI opponent with adjustable difficulty levels (1-5)
-- Customizable board sizes (5x5, 9x9, 13x13, 15x15, 19x19)
+- Customizable board sizes (9x9, 13x13, 15x15, 19x19)
 - Simple console interface
 - Intelligent AI that evaluates board positions and makes strategic moves
 - Timeout mechanism to ensure the AI makes moves within a reasonable time
@@ -184,7 +184,7 @@ Using a virtual environment is recommended to avoid conflicts with other Python 
    python3 gomoku.py
    ```
 
-2. Choose the board size (5, 9, 13, 15, or 19) and difficulty level (1-5).
+2. Choose the board size (9, 13, 15, or 19) and difficulty level (1-5).
 
 3. Make your moves by entering the row and column numbers separated by a space (e.g., "2 3" for row 2, column 3).
 
