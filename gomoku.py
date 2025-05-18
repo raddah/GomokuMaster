@@ -116,6 +116,11 @@ class Human_Player(EasyAI_Human_Player):
     def ask_move(self, game):
         """Ask the human player for a move.
         
+        This method handles user input with 1-based indexing for better usability:
+        - Users enter coordinates starting from 1 (more intuitive than 0-based)
+        - Input is converted to 0-based indexing internally for game logic
+        - Error messages use 1-based indexing for consistency
+        
         Args:
             game: The game instance.
             
@@ -127,14 +132,18 @@ class Human_Player(EasyAI_Human_Player):
         # Keep asking until a valid move is entered
         while True:
             try:
-                move_str = input(f"{self.name}, enter your move (row col): ")
-                row, col = map(int, move_str.split())
+                move_str = input(f"{self.name}, enter your move (row col), both starting from 1: ")
+                user_row, user_col = map(int, move_str.split())
+                
+                # Convert from 1-based indexing (user-friendly) to 0-based indexing (internal)
+                row, col = user_row - 1, user_col - 1
                 
                 # Check if the move is valid
                 if (row, col) in possible_moves:
                     return (row, col)
                 else:
-                    print(f"Invalid move. Row and column must be between 0 and {game.board_size - 1}, and the cell must be empty.")
+                    # Error message uses 1-based indexing for consistency with user input
+                    print(f"Invalid move. Row and column must be between 1 and {game.board_size}, and the cell must be empty.")
             except ValueError:
                 print("Invalid input. Please enter two integers separated by a space.")
 
@@ -208,9 +217,14 @@ class Gomoku(TwoPlayerGame):
         return False
 
     def show(self):
-        """Print the board."""
-        for row in self.board:
-            print(" ".join(["." if cell == 0 else ("O" if cell == 1 else "X") for cell in row]))
+        """Print the board.
+        
+        This method uses the __str__ method for consistency, ensuring that
+        the board is displayed with 1-based indexing and proper alignment
+        regardless of which method is used to show the board.
+        """
+        # Use the __str__ method for consistent display
+        print(self)
 
     def scoring(self):
         """Return a score for the current player.
@@ -389,16 +403,54 @@ class Gomoku(TwoPlayerGame):
         return False
 
     def __str__(self):
-        """Return a string representation of the board."""
-        # Add column numbers
-        s = "  " + " ".join(str(i) for i in range(self.board_size)) + "\n"
-        # Add row numbers and board
+        """Return a string representation of the board with 1-based indexing.
+        
+        This method creates a visually appealing board display with:
+        - Row and column numbers starting from 1 (not 0)
+        - Proper alignment for all board sizes (9x9, 13x13, 15x15, 19x19)
+        - Consistent borders and spacing
+        - Colored pieces (blue O for player 1, red X for player 2)
+        """
+        # Calculate width needed for the largest index (for proper alignment)
+        cell_width = len(str(self.board_size))
+        
+        # Add column numbers (1-based indexing for user-friendly display)
+        header = " " * (cell_width + 3)
+        for i in range(self.board_size):
+            header += f"{i+1:>{cell_width}} "
+        s = header + "\n"
+        
+        # Calculate total width for the horizontal line
+        # Each cell takes 2 characters (the piece and a space)
+        total_width = self.board_size * 2
+        
+        # Add a horizontal line at the top of the board
+        s += " " * (cell_width + 1) + "+" + "-" * total_width + "+\n"
+        
+        # Add row numbers (1-based) and board content
         for i, row in enumerate(self.board):
-            s += str(i) + " " + " ".join([
-                "." if cell == 0 else 
-                ("\033[1;34mO\033[0m" if cell == 1 else "\033[1;31mX\033[0m") 
-                for cell in row
-            ]) + "\n"
+            # Start the row with the row number and left border
+            row_str = f"{i+1:>{cell_width}} | "
+            
+            # Add each cell with proper formatting
+            for cell in row:
+                if cell == 0:
+                    # Empty cell
+                    row_str += "· "
+                elif cell == 1:
+                    # Player 1 (blue O)
+                    row_str += "\033[1;34mO\033[0m "
+                else:
+                    # Player 2 (red X)
+                    row_str += "\033[1;31mX\033[0m "
+            
+            # Add the right border (aligned consistently for all board sizes)
+            row_str += "|"
+            s += row_str + "\n"
+        
+        # Add a horizontal line at the bottom of the board
+        s += " " * (cell_width + 1) + "+" + "-" * total_width + "+\n"
+        
         return s
 
     def ttentry(self):
@@ -427,6 +479,7 @@ class Gomoku(TwoPlayerGame):
             
             print(f"\n\033[1;34m{self.players[0].name}: O\033[0m, \033[1;31m{self.players[1].name}: X\033[0m")
             print("To make a move, enter the row and column number (e.g., '2 3' for row 2, column 3).")
+            print("Both row and column numbers start from 1.")
             print(self)
 
         while not self.is_over():
