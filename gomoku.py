@@ -520,15 +520,15 @@ if __name__ == "__main__":
     # Ask for board size
     while True:
         try:
-            board_size = input("Enter board size (5, 9, 13, 15, or 19): ")
+            board_size = input("Enter board size (9, 13, 15, or 19): ")
             if board_size.strip() == "":
                 board_size = 15  # Default board size
                 break
             board_size = int(board_size)
-            if board_size in [5, 9, 13, 15, 19]:
+            if board_size in [9, 13, 15, 19]:
                 break
             else:
-                print("Invalid board size. Please enter 5, 9, 13, 15, or 19.")
+                print("Invalid board size. Please enter 9, 13, 15, or 19.")
         except ValueError:
             print("Invalid input. Please enter a number.")
     
