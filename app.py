@@ -3,8 +3,9 @@ from flask_cors import CORS
 import os
 import sys
 
-# Import the game module
-from gomoku import Gomoku, Player
+# Import the game module - use explicit import with full path
+import gomoku
+from gomoku import Gomoku
 
 app = Flask(__name__, static_folder='static')
 CORS(app)
@@ -49,23 +50,48 @@ def make_move():
     
     # Make the player's move
     try:
-        result = game.make_move(row, col)
+        # In gomoku.py, make_move expects a tuple (row, col)
+        game.make_move((row, col))
+        
+        # Check if the game is over after the player's move
+        game_over = game.is_over()
+        # Determine the winner (if any)
+        winner = None
+        if game_over and game.lose():  # If the game is over and the current player lost
+            winner = 3 - game.current_player  # The winner is the other player
         
         response = {
             'valid': True,
-            'board': [[cell.value for cell in row] for row in game.board],
-            'gameOver': game.game_over,
-            'winner': game.winner.value if game.winner else None,
+            'board': [[cell for cell in row] for row in game.board],  # Board is a 2D array of integers
+            'gameOver': game_over,
+            'winner': winner,
             'message': 'Move successful'
         }
         
         # If playing against AI and the game is not over, make AI move
-        if data.get('opponent') == 'ai' and not game.game_over:
-            ai_row, ai_col = game.ai_move()
+        if data.get('opponent') == 'ai' and not game_over:
+            # Switch to AI player (player 2)
+            game.current_player = 2
+            # Get AI move using the AI player's ask_move method
+            ai_move = game.players[1].ask_move(game)
+            ai_row, ai_col = ai_move
+            # Make the AI move
+            game.make_move(ai_move)
+            
+            # Check if the game is over after the AI's move
+            game_over = game.is_over()
+            # Determine the winner (if any)
+            winner = None
+            if game_over and game.lose():  # If the game is over and the current player lost
+                winner = 3 - game.current_player  # The winner is the other player
+            
             response['aiMove'] = {'row': ai_row, 'col': ai_col}
-            response['board'] = [[cell.value for cell in row] for row in game.board]
-            response['gameOver'] = game.game_over
-            response['winner'] = game.winner.value if game.winner else None
+            response['board'] = [[cell for cell in row] for row in game.board]
+            response['gameOver'] = game_over
+            response['winner'] = winner
+            
+            # Switch back to player 1 for the next move
+            game.current_player = 1
         
         return jsonify(response)
     except Exception as e:
@@ -89,8 +115,27 @@ def reset_game():
         'boardSize': board_size
     })
 
+import socket
+
+def find_free_port(start_port=5002, max_attempts=10):
+    for port in range(start_port, start_port + max_attempts):
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+            try:
+                s.bind(('127.0.0.1', port))
+                return port
+            except OSError:
+                continue
+    raise RuntimeError(f"No free port found in range {start_port}-{start_port + max_attempts - 1}")
+
 if __name__ == '__main__':
-    port = int(os.environ.get('PORT', 5001))
+    # Try to get port from environment, else find a free one
+    port = int(os.environ.get('PORT', 0))
+    if port == 0:
+        try:
+            port = find_free_port(5002, 10)
+        except RuntimeError as e:
+            print(str(e))
+            sys.exit(1)
     print(f"Starting Gomoku Master server on port {port}")
     print(f"Open http://localhost:{port} in your browser to play")
     app.run(host='0.0.0.0', port=port, debug=True)

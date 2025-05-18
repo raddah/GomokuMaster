@@ -16,20 +16,165 @@ Gomoku is a two-player abstract strategy board game where the goal is to be the 
 
 ## Requirements
 
-- Python 3.x
-- easyAI library
+- Python 3.6 or higher
+- Dependencies: easyAI, matplotlib, numpy, pandas
 
 ## Installation
 
-1. Clone the repository:
+Below are detailed installation instructions for Windows, macOS, and Linux.
+
+### Windows
+
+1. **Install Python**:
+   - Download the latest Python installer from [python.org](https://www.python.org/downloads/windows/)
+   - Run the installer and check "Add Python to PATH" during installation
+   - Verify installation by opening Command Prompt and typing:
+     ```
+     python --version
+     ```
+
+2. **Clone the repository**:
+   - Install Git from [git-scm.com](https://git-scm.com/download/win) if not already installed
+   - Open Command Prompt and run:
+     ```
+     git clone https://github.com/raddah/GomokuMaster.git
+     cd GomokuMaster
+     ```
+   - Alternatively, download and extract the ZIP file from GitHub
+
+3. **Install dependencies**:
+   - Using pip (recommended):
+     ```
+     pip install -r requirements.txt
+     ```
+   - Or install dependencies individually:
+     ```
+     pip install easyAI matplotlib numpy pandas
+     ```
+
+4. **Run the game**:
    ```
-   git clone https://github.com/raddah/GomokuMaster.git
-   cd GomokuMaster
+   python gomoku.py
    ```
 
-2. Install the required dependencies:
+### macOS
+
+1. **Install Python**:
+   - macOS comes with Python, but it's recommended to install the latest version
+   - Install Homebrew if not already installed:
+     ```
+     /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+     ```
+   - Install Python using Homebrew:
+     ```
+     brew install python
+     ```
+   - Verify installation:
+     ```
+     python3 --version
+     ```
+
+2. **Clone the repository**:
+   - Open Terminal and run:
+     ```
+     git clone https://github.com/raddah/GomokuMaster.git
+     cd GomokuMaster
+     ```
+   - Alternatively, download and extract the ZIP file from GitHub
+
+3. **Install dependencies**:
+   - Using pip (recommended):
+     ```
+     pip3 install -r requirements.txt
+     ```
+   - Or install dependencies individually:
+     ```
+     pip3 install easyAI matplotlib numpy pandas
+     ```
+
+4. **Run the game**:
    ```
-   pip install easyAI
+   python3 gomoku.py
+   ```
+
+### Linux
+
+1. **Install Python**:
+   - Most Linux distributions come with Python pre-installed
+   - For Debian/Ubuntu:
+     ```
+     sudo apt update
+     sudo apt install python3 python3-pip
+     ```
+   - For Fedora:
+     ```
+     sudo dnf install python3 python3-pip
+     ```
+   - For Arch Linux:
+     ```
+     sudo pacman -S python python-pip
+     ```
+   - Verify installation:
+     ```
+     python3 --version
+     ```
+
+2. **Clone the repository**:
+   - Install Git if not already installed:
+     - Debian/Ubuntu: `sudo apt install git`
+     - Fedora: `sudo dnf install git`
+     - Arch Linux: `sudo pacman -S git`
+   - Clone the repository:
+     ```
+     git clone https://github.com/raddah/GomokuMaster.git
+     cd GomokuMaster
+     ```
+   - Alternatively, download and extract the ZIP file from GitHub
+
+3. **Install dependencies**:
+   - Using pip (recommended):
+     ```
+     pip3 install -r requirements.txt
+     ```
+   - Or install dependencies individually:
+     ```
+     pip3 install easyAI matplotlib numpy pandas
+     ```
+
+4. **Run the game**:
+   ```
+   python3 gomoku.py
+   ```
+
+### Using Virtual Environment (Recommended for all platforms)
+
+Using a virtual environment is recommended to avoid conflicts with other Python packages:
+
+1. **Create a virtual environment**:
+   - Windows:
+     ```
+     python -m venv venv
+     venv\Scripts\activate
+     ```
+   - macOS/Linux:
+     ```
+     python3 -m venv venv
+     source venv/bin/activate
+     ```
+
+2. **Install dependencies in the virtual environment**:
+   ```
+   pip install -r requirements.txt
+   ```
+
+3. **Run the game**:
+   ```
+   python gomoku.py
+   ```
+
+4. **Deactivate the virtual environment when done**:
+   ```
+   deactivate
    ```
 
 ## How to Play
