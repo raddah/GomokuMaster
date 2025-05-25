@@ -220,6 +220,48 @@ The scoring function evaluates board positions based on the number of stones in 
 - Add support for player vs. player mode
 - Add support for saving and loading games
 
+## Web Interface (Optional)
+
+A simple web interface is available using Flask.
+
+1. **Install Flask** (if not already installed):
+   ```
+   pip install flask
+   ```
+
+2. **Run the web server**:
+   ```
+   python app.py
+   ```
+
+3. Open your browser and go to [http://127.0.0.1:5000](http://127.0.0.1:5000) to play Gomoku in your browser.
+
+*Note: The web interface is a work in progress and may have limited features compared to the console version.*
+
+## Benchmarking
+
+To evaluate AI performance and compare algorithms, use the provided benchmarking scripts.
+
+- **Run a quick benchmark**:
+  ```
+  python quick_benchmark.py
+  ```
+
+- **Run a detailed benchmark**:
+  ```
+  python benchmark.py
+  ```
+
+These scripts will output performance statistics and can help you tune AI parameters.
+
+## Running Unit Tests
+
+To run the unit tests and verify the integrity of the codebase:
+
+```
+python -m unittest discover tests
+```
+
 ## License
 
 This project is licensed under the MIT License - see the LICENSE file for details.

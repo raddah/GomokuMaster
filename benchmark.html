@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gomoku AI Benchmark Dashboard</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #f7f7f7; margin: 0; padding: 0; }
+        .container { max-width: 900px; margin: 40px auto; background: #fff; border-radius: 8px; box-shadow: 0 2px 8px #0001; padding: 32px; }
+        h1 { text-align: center; }
+        .config { display: flex; gap: 24px; justify-content: center; margin-bottom: 32px; }
+        .config label { font-weight: bold; }
+        .config select, .config input { padding: 4px 8px; font-size: 1em; }
+        #runBtn { padding: 8px 24px; font-size: 1em; background: #1976d2; color: #fff; border: none; border-radius: 4px; cursor: pointer; }
+        #runBtn:disabled { background: #aaa; }
+        #results { margin-top: 32px; }
+        .chart-container { width: 100%; max-width: 700px; margin: 0 auto; }
+        #log { background: #222; color: #eee; padding: 12px; border-radius: 4px; font-size: 0.95em; margin-top: 24px; height: 120px; overflow-y: auto; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Gomoku AI Benchmark Dashboard</h1>
+        <div class="config">
+            <label>Algorithm:
+                <select id="algorithm">
+                    <option value="negamax">Negamax</option>
+                    <option value="sss">SSS*</option>
+                </select>
+            </label>
+            <label>Board Size:
+                <select id="boardSize">
+                    <option value="9">9x9</option>
+                    <option value="13">13x13</option>
+                    <option value="15" selected>15x15</option>
+                    <option value="19">19x19</option>
+                </select>
+            </label>
+            <label>Difficulty:
+                <select id="difficulty">
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3" selected>3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                </select>
+            </label>
+            <label>Trials:
+                <input type="number" id="trials" min="1" max="10" value="3" style="width: 60px;">
+            </label>
+            <button id="runBtn">Run Benchmark</button>
+        </div>
+        <div id="results">
+            <div class="chart-container">
+                <canvas id="benchmarkChart"></canvas>
+            </div>
+            <div id="log"></div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script type="module" src="benchmark_dashboard.js"></script>
+</body>
+</html>

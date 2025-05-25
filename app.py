@@ -115,6 +115,14 @@ def reset_game():
         'boardSize': board_size
     })
 
+@app.route('/benchmark.html')
+def serve_benchmark():
+    return send_from_directory('.', 'benchmark.html')
+
+@app.route('/benchmark_dashboard.js')
+def serve_benchmark_js():
+    return send_from_directory('.', 'benchmark_dashboard.js')
+
 import socket
 
 def find_free_port(start_port=5002, max_attempts=10):
@@ -126,6 +134,36 @@ def find_free_port(start_port=5002, max_attempts=10):
             except OSError:
                 continue
     raise RuntimeError(f"No free port found in range {start_port}-{start_port + max_attempts - 1}")
+
+@app.route('/api/benchmark', methods=['POST'])
+def api_benchmark():
+    data = request.json
+    algorithm = data.get('algorithm', 'negamax')
+    board_size = int(data.get('boardSize', 15))
+    difficulty = int(data.get('difficulty', 3))
+    trials = int(data.get('trials', 3))
+
+    # Import benchmark logic
+    import quick_benchmark
+    import importlib
+    importlib.reload(quick_benchmark)  # Ensure latest code
+
+    # Map algorithm string to supported algorithms
+    if algorithm == 'negamax':
+        avg_time = quick_benchmark.benchmark_ai_move(
+            board_size=board_size, difficulty=difficulty, num_trials=trials
+        )
+        # For demo, only avg_time is returned
+        return jsonify({
+            'algorithm': algorithm,
+            'board_size': board_size,
+            'difficulty': difficulty,
+            'trials': trials,
+            'avg_time_per_move': avg_time,
+            'avg_nodes_per_move': None
+        })
+    else:
+        return jsonify({'error': f'Algorithm {algorithm} not supported in API yet.'}), 400
 
 if __name__ == '__main__':
     # Try to get port from environment, else find a free one

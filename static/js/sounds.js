@@ -1,8 +1,3 @@
-// Sound files for stone placement
-const placeStoneSound = new Audio('./static/sounds/stone_place.mp3');
-const winSound = new Audio('./static/sounds/win.mp3');
-const drawSound = new Audio('./static/sounds/draw.mp3');
-const errorSound = new Audio('./static/sounds/error.mp3');
 
 // Function to play sounds with error handling
 function playSound(sound) {

@@ -415,11 +415,11 @@ The AI evaluates board positions by:
 
 ### Sound System
 
-- Sound effects for key game events:
-  - Stone placement (`stone_place.mp3`)
-  - Win condition (`win.mp3`)
-  - Draw condition (`draw.mp3`)
-  - Error notifications (`error.mp3`)
+- Sound effects for key game events using Audio Web API:
+  - Stone placement
+  - Win condition
+  - Draw condition 
+  - Error notifications 
 
 - Modular implementation in `static/js/sounds.js`:
   ```javascript
@@ -447,12 +447,8 @@ The AI evaluates board positions by:
 static/
 ├── images/       # Game images and icons
 ├── js/
-│   └── sounds.js # Sound management module
-└── sounds/
-    ├── draw.mp3      # Sound for draw game
-    ├── error.mp3     # Sound for invalid moves
-    ├── stone_place.mp3  # Sound for placing stones
-    └── win.mp3       # Sound for win condition
+  └── sounds.js # Sound management module
+
 ```
 
 ## Extensibility
